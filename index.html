@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNA Interativo - Mutações Genéticas</title>
+    <title>DNA Interativo - Estrutura Molecular</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
@@ -16,7 +16,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #0c0e1b 0%, #1a1d3a 100%);
             color: white;
         }
 
@@ -30,28 +30,29 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(12, 14, 27, 0.9);
             backdrop-filter: blur(10px);
             border-radius: 16px;
             padding: 24px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 380px;
             z-index: 100;
-            transition: all 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         h1 {
             font-size: 1.5rem;
             margin-bottom: 8px;
-            background: linear-gradient(90deg, #60a5fa, #34d399);
+            background: linear-gradient(90deg, #60a5fa, #f87171);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .subtitle {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #94a3b8;
             margin-bottom: 20px;
             line-height: 1.4;
@@ -60,7 +61,7 @@
         .disease-selector {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
         }
 
@@ -73,7 +74,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: left;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             position: relative;
             overflow: hidden;
         }
@@ -91,21 +92,6 @@
             box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
         }
 
-        .disease-btn::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 3px;
-            background: transparent;
-            transition: background 0.3s;
-        }
-
-        .disease-btn:hover::before {
-            background: #60a5fa;
-        }
-
         .info-box {
             background: rgba(30, 41, 59, 0.6);
             border-left: 3px solid #34d399;
@@ -114,6 +100,8 @@
             margin-top: 16px;
             display: none;
             animation: slideIn 0.3s ease;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         .info-box.active {
@@ -121,14 +109,8 @@
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .info-title {
@@ -136,12 +118,6 @@
             color: #34d399;
             margin-bottom: 8px;
             font-size: 1.1rem;
-        }
-
-        .info-text {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: #cbd5e1;
         }
 
         .mutation-highlight {
@@ -153,27 +129,38 @@
             position: absolute;
             bottom: 20px;
             right: 20px;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(12, 14, 27, 0.9);
             backdrop-filter: blur(10px);
-            padding: 16px;
+            padding: 20px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-width: 300px;
+        }
+
+        .legend-title {
+            grid-column: 1 / -1;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            color: #cbd5e1;
         }
 
         .color-box {
             width: 16px;
             height: 16px;
-            border-radius: 3px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .controls-hint {
@@ -181,27 +168,37 @@
             bottom: 20px;
             left: 20px;
             color: #64748b;
-            font-size: 0.8rem;
-            background: rgba(15, 23, 42, 0.7);
-            padding: 8px 12px;
-            border-radius: 6px;
+            font-size: 0.75rem;
+            background: rgba(12, 14, 27, 0.8);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .reset-btn {
             background: transparent;
             border: 1px solid #64748b;
             color: #94a3b8;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 0.85rem;
             transition: all 0.3s;
+            width: 100%;
         }
 
         .reset-btn:hover {
             border-color: #34d399;
             color: #34d399;
+            background: rgba(52, 211, 153, 0.1);
+        }
+
+        .structure-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 8px;
+            font-style: italic;
         }
 
         @media (max-width: 768px) {
@@ -211,12 +208,8 @@
                 top: 10px;
                 padding: 16px;
             }
-            
             .legend {
-                bottom: 10px;
-                right: 10px;
-                left: 10px;
-                justify-content: center;
+                display: none;
             }
         }
     </style>
@@ -225,78 +218,94 @@
     <div id="canvas-container"></div>
 
     <div class="ui-panel">
-        <h1>🧬 DNA Interativo</h1>
-        <div class="subtitle">Explore as mutações genéticas responsáveis por doenças hereditárias. Selecione uma doença para visualizar a alteração na fita de DNA.</div>
+        <h1>🧬 DNA Molecular</h1>
+        <div class="subtitle">Estrutura real: Fosfato (azul), Desoxirribose (vermelho) e Bases nitrogenadas (barras coloridas)</div>
         
         <div class="disease-selector">
-            <button class="disease-btn" onclick="showDisease('normal')">
-                🧬 DNA Normal (Referência)
+            <button class="disease-btn active" onclick="showDisease('normal')">
+                🧬 DNA Normal
             </button>
             <button class="disease-btn" onclick="showDisease('falciforme')">
-                🩸 Anemia Falciforme
+                🩸 Anemia Falciforme (Ponto)
             </button>
             <button class="disease-btn" onclick="showDisease('huntington')">
-                🧠 Doença de Huntington
+                🧠 Huntington (Expansão)
             </button>
             <button class="disease-btn" onclick="showDisease('duchenne')">
-                💪 Distrofia Muscular de Duchenne
+                💪 Duchenne (Deleção)
             </button>
             <button class="disease-btn" onclick="showDisease('fenilcetonuria')">
-                🧪 Fenilcetonúria
+                🧪 Fenilcetonúria (Missense)
             </button>
         </div>
 
-        <div id="info-normal" class="info-box">
+        <div id="info-normal" class="info-box active">
             <div class="info-title">DNA Saudável</div>
             <div class="info-text">
-                Estrutura normal da dupla hélice. As bases nitrogenadas (A-T, C-G) pareiam corretamente, 
-                permitindo a síntese proteica adequada. Arraste para rotacionar e use o scroll para zoom.
+                Estrutura da dupla hélice:<br>
+                • <strong>Azul:</strong> Grupo Fosfato<br>
+                • <strong>Vermelho:</strong> Desoxirribose (açúcar)<br>
+                • <strong>Barras:</strong> Bases nitrogenadas (A-T, C-G)<br><br>
+                As bases pareiam no centro, mantendo a estrutura estável.
             </div>
         </div>
 
         <div id="info-falciforme" class="info-box">
             <div class="info-title">Anemia Falciforme</div>
             <div class="info-text">
-                <span class="mutation-highlight">Mutação Pontual (Ponto)</span>: Substituição de um único nucleotídeo 
-                no gene da hemoglobina. <br><br>
-                <strong>Codão 6:</strong> GAG (Ác. Glutâmico) → GTG (Valina)<br>
-                Esta mudança faz com que as hemácias assumam forma de foice, obstruindo os vasos sanguíneos.
+                <span class="mutation-highlight">Mutação Pontual</span> no gene β-globina.<br><br>
+                <strong>Mudança:</strong> GAG → GTG no codão 6<br>
+                Resultado: Ác. Glutâmico → Valina<br><br>
+                <strong>Visual:</strong> Barra laranja pulsante mostra a troca de A por T na fita, alterando a hemoglobina e deformando as hemácias em formato de foice.
             </div>
         </div>
 
         <div id="info-huntington" class="info-box">
             <div class="info-title">Doença de Huntington</div>
             <div class="info-text">
-                <span class="mutation-highlight">Expansão de Trinucleotídeos</span>: Repetição anormal do codão CAG 
-                no gene HTT.<br><br>
+                <span class="mutation-highlight">Expansão de CAG</span> no gene HTT.<br><br>
                 <strong>Normal:</strong> 10-35 repetições<br>
-                <strong>Doença:</strong> >36 repetições<br><br>
-                Resulta em uma proteína anormal que danifica os neurônios do cérebro.
+                <strong>Patológico:</strong> >36 repetições<br><br>
+                <strong>Visual:</strong> Sequência de barras roxas repetidas no centro (CAG-CAG-CAG), causando acúmulo de proteínas tóxicas nos neurônios.
             </div>
         </div>
 
         <div id="info-duchenne" class="info-box">
             <div class="info-title">Distrofia de Duchenne</div>
             <div class="info-text">
-                <span class="mutation-highlight">Deleção Grande</span>: Perda de grandes segmentos do gene DMD, 
-                responsável pela distrofina (proteína muscular).<br><br>
-                A ausência dessa proteína leva à degeneração progressiva dos músculos esqueléticos e cardíacos.
+                <span class="mutation-highlight">Deleção Grande</span> no gene DMD.<br><br>
+                Perda de éxons que codificam a distrofina (proteína muscular).<br><br>
+                <strong>Visual:</strong> Gap na hélice - falta de bases conectando os backbones, representando a ausência de segmentos genéticos essenciais.
             </div>
         </div>
 
         <div id="info-fenilcetonuria" class="info-box">
             <div class="info-title">Fenilcetonúria</div>
             <div class="info-text">
-                <span class="mutation-highlight">Mutação Missense</span>: Alteração no gene PAH (cromossomo 12).<br><br>
-                <strong>Mudança:</strong> GAA → CAA no RNA<br>
-                Impede a produção da enzima que metaboliza a fenilalanina, causando acúmulo tóxico no cérebro.
+                <span class="mutation-highlight">Mutação Missense</span> no gene PAH.<br><br>
+                <strong>Mudança:</strong> GAA → CAA<br>
+                Resulta em deficiência da enzima que metaboliza fenilalanina.<br><br>
+                <strong>Visual:</strong> Troca pontual destacada em rosa, impedindo a produção da enzima necessária.
             </div>
         </div>
 
+        <div class="structure-label">
+            Arraste para rotacionar • Scroll para zoom
+        </div>
+        
         <button class="reset-btn" onclick="resetView()">↺ Resetar Visualização</button>
     </div>
 
     <div class="legend">
+        <div class="legend-title">Legenda Estrutural</div>
+        <div class="legend-item">
+            <div class="color-box" style="background: #3b82f6;"></div>
+            <span>Fosfato</span>
+        </div>
+        <div class="legend-item">
+            <div class="color-box" style="background: #dc2626;"></div>
+            <span>Desoxirribose</span>
+        </div>
         <div class="legend-item">
             <div class="color-box" style="background: #ef4444;"></div>
             <span>Adenina (A)</span>
@@ -315,7 +324,7 @@
         </div>
         <div class="legend-item">
             <div class="color-box" style="background: #f97316;"></div>
-            <span>Região Mutada</span>
+            <span>Mutação</span>
         </div>
     </div>
 
@@ -324,246 +333,397 @@
     </div>
 
     <script>
-        // Configuração da cena Three.js
         let scene, camera, renderer, controls;
         let dnaGroup;
-        let currentMutation = 'normal';
-        let animationId;
-        
-        // Cores das bases
+        let currentDisease = 'normal';
+        let pulseObjects = [];
+
         const colors = {
-            A: 0xef4444,  // Vermelho
-            T: 0x3b82f6,  // Azul
-            C: 0x22c55e,  // Verde
-            G: 0xeab308,  // Amarelo
-            mutation: 0xf97316, // Laranja
-            backbone: 0x64748b  // Cinza
+            phosphate: 0x3b82f6,    // Azul fosfato
+            sugar: 0xdc2626,        // Vermelho pentose
+            A: 0xef4444,            // Vermelho Adenina
+            T: 0x3b82f6,            // Azul Timina
+            C: 0x22c55e,            // Verde Citosina
+            G: 0xeab308,            // Amarelo Guanina
+            mutation: 0xf97316,     // Laranja mutação
+            pulse: 0xa855f7         // Roxo para expansão
         };
 
-        // Inicialização
         function init() {
             const container = document.getElementById('canvas-container');
             
-            // Cena
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x0f172a, 0.02);
+            scene.fog = new THREE.FogExp2(0x0c0e1b, 0.03);
             
-            // Câmera
             camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 40);
+            camera.position.set(25, 20, 35);
             
-            // Renderer
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.shadowMap.enabled = true;
             container.appendChild(renderer.domElement);
             
-            // Controles
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.minDistance = 10;
             controls.maxDistance = 100;
+            controls.target.set(0, 10, 0);
             
-            // Luzes
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            // Iluminação
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(10, 10, 10);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(20, 30, 20);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
             
-            const pointLight = new THREE.PointLight(0x60a5fa, 0.5);
-            pointLight.position.set(-10, -10, -10);
-            scene.add(pointLight);
+            const pointLight1 = new THREE.PointLight(0x60a5fa, 0.5);
+            pointLight1.position.set(-20, 20, -20);
+            scene.add(pointLight1);
             
-            // Criar DNA inicial
             createDNA('normal');
             
-            // Event listeners
             window.addEventListener('resize', onWindowResize, false);
-            
-            // Iniciar animação
             animate();
         }
 
         function createDNA(type) {
-            if (dnaGroup) scene.remove(dnaGroup);
+            // Limpar grupo anterior
+            if (dnaGroup) {
+                scene.remove(dnaGroup);
+            }
             dnaGroup = new THREE.Group();
+            pulseObjects = [];
             
-            const numPairs = 20;
-            const radius = 3;
-            const height = 0.8;
+            const numPairs = 24;
+            const radius = 4;
+            const rise = 1.2; // Distância vertical entre pares
+            const twist = 36 * (Math.PI / 180); // 36 graus por par (10 pares por turno)
             
             for (let i = 0; i < numPairs; i++) {
-                const angle = (i / numPairs) * Math.PI * 4;
-                const y = (i - numPairs/2) * height;
+                const angle = i * twist;
+                const y = i * rise;
                 
-                // Determinar bases com base no tipo de doença
-                let base1, base2, isMutated = false;
+                // Determinar qual base usar baseado na doença
+                let base1, base2, isMutated = false, isDeleted = false;
                 
-                if (type === 'normal') {
-                    // Sequência normal variada
-                    const sequence = ['A', 'T', 'C', 'G', 'A', 'C', 'G', 'T'];
-                    base1 = sequence[i % sequence.length];
-                    base2 = getComplementary(base1);
-                } 
-                else if (type === 'falciforme') {
-                    // Mutação no codão 6 (posição aproximada)
-                    if (i === 8 || i === 9) {
-                        base1 = 'T'; // Mutação: A->T (fita codificante)
-                        base2 = 'A';
-                        isMutated = true;
-                    } else {
-                        const seq = ['G', 'A', 'G'];
-                        base1 = seq[i % 3];
+                switch(type) {
+                    case 'normal':
+                        // Sequência variada normal
+                        const seq = ['A', 'T', 'C', 'G', 'A', 'C', 'G', 'T', 'A', 'T', 'G', 'C'];
+                        base1 = seq[i % seq.length];
                         base2 = getComplementary(base1);
-                    }
+                        break;
+                        
+                    case 'falciforme':
+                        // Mutação no codão 6 (posição ~12 na nossa hélice)
+                        if (i === 12) {
+                            base1 = 'T'; // Mutação: A -> T
+                            base2 = 'A';
+                            isMutated = true;
+                        } else if (i === 11 || i === 13) {
+                            base1 = (i === 11) ? 'G' : 'G';
+                            base2 = (i === 11) ? 'C' : 'C';
+                        } else {
+                            base1 = 'A';
+                            base2 = 'T';
+                        }
+                        break;
+                        
+                    case 'huntington':
+                        // Expansão CAG nas posições 8-14
+                        if (i >= 8 && i <= 14) {
+                            const pos = (i - 8) % 3;
+                            base1 = (pos === 0) ? 'C' : (pos === 1) ? 'A' : 'G';
+                            base2 = getComplementary(base1);
+                            isMutated = true; // Marcar como mutação especial (expansão)
+                        } else {
+                            base1 = 'T';
+                            base2 = 'A';
+                        }
+                        break;
+                        
+                    case 'duchenne':
+                        // Deleção nas posições 10-14 (gap na hélice)
+                        if (i >= 10 && i <= 14) {
+                            isDeleted = true;
+                        } else {
+                            base1 = 'C';
+                            base2 = 'G';
+                        }
+                        break;
+                        
+                    case 'fenilcetonuria':
+                        // Mutação puntual na posição 12
+                        if (i === 12) {
+                            base1 = 'C'; // Troca G -> C
+                            base2 = 'G';
+                            isMutated = true;
+                        } else {
+                            base1 = 'G';
+                            base2 = 'C';
+                        }
+                        break;
                 }
-                else if (type === 'huntington') {
-                    // Repetições CAG expandidas no meio
-                    if (i >= 7 && i <= 12) {
-                        base1 = (i % 3 === 0) ? 'C' : (i % 3 === 1) ? 'A' : 'G';
-                        base2 = getComplementary(base1);
-                        isMutated = true;
-                    } else {
-                        base1 = 'A';
-                        base2 = 'T';
-                    }
-                }
-                else if (type === 'duchenne') {
-                    // Deleção - falta de bases no meio
-                    if (i >= 6 && i <= 10) {
-                        continue; // Pula criação (deleção)
-                    } else {
-                        base1 = 'C';
-                        base2 = 'G';
-                    }
-                }
-                else if (type === 'fenilcetonuria') {
-                    // Mutação puntual específica
-                    if (i === 10) {
-                        base1 = 'C'; // Mudança G->C
-                        base2 = 'G';
-                        isMutated = true;
-                    } else {
-                        base1 = 'G';
-                        base2 = 'C';
-                    }
-                }
                 
-                // Criar backbone (esqueleto açúcar-fosfato)
-                const backboneGeometry = new THREE.CylinderGeometry(0.1, 0.1, height * 0.8);
-                const backboneMaterial = new THREE.MeshPhongMaterial({ 
-                    color: colors.backbone,
-                    shininess: 100
-                });
-                
-                // Posições do backbone
-                const x1 = Math.cos(angle) * radius;
-                const z1 = Math.sin(angle) * radius;
-                const x2 = Math.cos(angle + Math.PI) * radius;
-                const z2 = Math.sin(angle + Math.PI) * radius;
-                
-                // Fita 1
-                const backbone1 = new THREE.Mesh(backboneGeometry, backboneMaterial);
-                backbone1.position.set(x1, y, z1);
-                backbone1.rotation.z = angle;
-                dnaGroup.add(backbone1);
-                
-                // Fita 2
-                const backbone2 = new THREE.Mesh(backboneGeometry, backboneMaterial);
-                backbone2.position.set(x2, y, z2);
-                backbone2.rotation.z = angle + Math.PI;
-                dnaGroup.add(backbone2);
-                
-                // Criar par de bases (ligação de hidrogênio)
-                if (type !== 'duchenne' || i < 6 || i > 10) {
-                    createBasePair(x1, y, z1, x2, y, z2, base1, base2, isMutated, angle);
+                if (!isDeleted) {
+                    createBasePair(i, angle, y, radius, base1, base2, isMutated, type);
+                } else {
+                    // Para Duchenne - criar apenas os backbones sem as bases
+                    createBackboneOnly(i, angle, y, radius);
                 }
             }
+            
+            // Centralizar o DNA
+            const centerOffset = (numPairs * rise) / 2;
+            dnaGroup.position.y = -centerOffset;
             
             scene.add(dnaGroup);
         }
 
-        function createBasePair(x1, y, z1, x2, y, z2, base1, base2, isMutated, angle) {
-            // Geometria das bases (esferas achatadas)
-            const baseGeometry = new THREE.SphereGeometry(0.35, 16, 16);
-            baseGeometry.scale(1, 0.6, 1);
+        function createBasePair(index, angle, y, radius, base1, base2, isMutated, diseaseType) {
+            // Posições dos açúcares (desoxirribose) nas duas fitas
+            const sugar1Pos = {
+                x: Math.cos(angle) * radius,
+                z: Math.sin(angle) * radius
+            };
+            const sugar2Pos = {
+                x: Math.cos(angle + Math.PI) * radius,
+                z: Math.sin(angle + Math.PI) * radius
+            };
             
-            const color1 = isMutated ? colors.mutation : colors[base1];
-            const color2 = isMutated ? colors.mutation : colors[base2];
+            // Criar Fosfatos (azuis) - alternados com açúcar
+            const phosphateOffset = 0.6;
+            const phosphateAngle = angle + 0.3; // Ligeiramente deslocado
             
-            // Material com brilho para mutações
-            const material1 = new THREE.MeshPhongMaterial({ 
+            const phos1Pos = {
+                x: Math.cos(phosphateAngle) * (radius + 0.3),
+                z: Math.sin(phosphateAngle) * (radius + 0.3),
+                y: y + phosphateOffset
+            };
+            const phos2Pos = {
+                x: Math.cos(phosphateAngle + Math.PI) * (radius + 0.3),
+                z: Math.sin(phosphateAngle + Math.PI) * (radius + 0.3),
+                y: y + phosphateOffset
+            };
+            
+            // Esfera Fosfato (azul)
+            const phosGeo = new THREE.SphereGeometry(0.5, 16, 16);
+            const phosMat = new THREE.MeshPhongMaterial({ 
+                color: colors.phosphate,
+                shininess: 100 
+            });
+            
+            const phos1 = new THREE.Mesh(phosGeo, phosMat);
+            phos1.position.set(phos1Pos.x, phos1Pos.y, phos1Pos.z);
+            dnaGroup.add(phos1);
+            
+            const phos2 = new THREE.Mesh(phosGeo, phosMat);
+            phos2.position.set(phos2Pos.x, phos2Pos.y, phos2Pos.z);
+            dnaGroup.add(phos2);
+            
+            // Esfera Açúcar/Desoxirribose (vermelha)
+            const sugarGeo = new THREE.SphereGeometry(0.6, 16, 16);
+            const sugarMat = new THREE.MeshPhongMaterial({ 
+                color: colors.sugar,
+                shininess: 100 
+            });
+            
+            const sugar1 = new THREE.Mesh(sugarGeo, sugarMat);
+            sugar1.position.set(sugar1Pos.x, y, sugar1Pos.z);
+            dnaGroup.add(sugar1);
+            
+            const sugar2 = new THREE.Mesh(sugarGeo, sugarMat);
+            sugar2.position.set(sugar2Pos.x, y, sugar2Pos.z);
+            dnaGroup.add(sugar2);
+            
+            // Conexão Fosfato-Açúcar (hastes do backbone)
+            const bondGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.8);
+            const bondMat = new THREE.MeshPhongMaterial({ color: 0x94a3b8 });
+            
+            const bond1 = new THREE.Mesh(bondGeo, bondMat);
+            bond1.position.set(
+                (phos1Pos.x + sugar1Pos.x)/2, 
+                (phos1Pos.y + y)/2, 
+                (phos1Pos.z + sugar1Pos.z)/2
+            );
+            bond1.lookAt(sugar1Pos.x, y, sugar1Pos.z);
+            bond1.rotateX(Math.PI/2);
+            dnaGroup.add(bond1);
+            
+            const bond2 = new THREE.Mesh(bondGeo, bondMat);
+            bond2.position.set(
+                (phos2Pos.x + sugar2Pos.x)/2, 
+                (phos2Pos.y + y)/2, 
+                (phos2Pos.z + sugar2Pos.z)/2
+            );
+            bond2.lookAt(sugar2Pos.x, y, sugar2Pos.z);
+            bond2.rotateX(Math.PI/2);
+            dnaGroup.add(bond2);
+            
+            // Bases nitrogenadas (barras/cilindros coloridos no centro)
+            const baseLength = radius * 1.8; // Comprimento da barra
+            const baseRadius = 0.35;
+            
+            // Cor das bases
+            let color1, color2;
+            if (isMutated && diseaseType === 'huntington') {
+                // Expansão CAG - cor especial roxa
+                color1 = colors.pulse;
+                color2 = colors.pulse;
+            } else if (isMutated) {
+                color1 = colors.mutation;
+                color2 = colors.mutation;
+            } else {
+                color1 = colors[base1];
+                color2 = colors[base2];
+            }
+            
+            // Criar cilindros das bases saindo dos açúcares até o centro
+            const baseGeo = new THREE.CylinderGeometry(baseRadius, baseRadius, baseLength/2, 12);
+            baseGeo.rotateZ(Math.PI/2); // Deitar o cilindro
+            
+            // Base 1 (da fita 1 até o centro)
+            const baseMat1 = new THREE.MeshPhongMaterial({ 
                 color: color1,
                 emissive: isMutated ? 0x331100 : 0x000000,
                 shininess: 100
             });
+            const baseMesh1 = new THREE.Mesh(baseGeo, baseMat1);
             
-            const material2 = new THREE.MeshPhongMaterial({ 
+            // Posicionar no meio do caminho entre açúcar e centro
+            baseMesh1.position.set(sugar1Pos.x/2, y, sugar1Pos.z/2);
+            baseMesh1.lookAt(0, y, 0);
+            baseMesh1.rotateY(Math.PI/2);
+            dnaGroup.add(baseMesh1);
+            
+            // Base 2 (da fita 2 até o centro)
+            const baseMat2 = new THREE.MeshPhongMaterial({ 
                 color: color2,
                 emissive: isMutated ? 0x331100 : 0x000000,
                 shininess: 100
             });
+            const baseMesh2 = new THREE.Mesh(baseGeo, baseMat2);
+            baseMesh2.position.set(sugar2Pos.x/2, y, sugar2Pos.z/2);
+            baseMesh2.lookAt(0, y, 0);
+            baseMesh2.rotateY(Math.PI/2);
+            dnaGroup.add(baseMesh2);
             
-            // Base 1
-            const mesh1 = new THREE.Mesh(baseGeometry, material1);
-            mesh1.position.set(x1 * 0.85, y, z1 * 0.85);
-            mesh1.rotation.y = angle;
-            mesh1.userData = { isMutation: isMutated };
-            dnaGroup.add(mesh1);
-            
-            // Base 2
-            const mesh2 = new THREE.Mesh(baseGeometry, material2);
-            mesh2.position.set(x2 * 0.85, y, z2 * 0.85);
-            mesh2.rotation.y = angle + Math.PI;
-            mesh2.userData = { isMutation: isMutated };
-            dnaGroup.add(mesh2);
-            
-            // Ligação de hidrogênio (cilindro fino entre as bases)
-            if (!isMutated || currentMutation === 'falciforme') {
-                const dist = Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(z2-z1, 2)) * 0.7;
-                const bondGeometry = new THREE.CylinderGeometry(0.03, 0.03, dist);
-                const bondMaterial = new THREE.MeshBasicMaterial({ 
-                    color: 0xffffff, 
-                    transparent: true, 
-                    opacity: 0.4 
-                });
-                
-                const bond = new THREE.Mesh(bondGeometry, bondMaterial);
-                bond.position.set((x1+x2)/2 * 0.85, y, (z1+z2)/2 * 0.85);
-                bond.rotation.z = Math.PI / 2;
-                bond.rotation.y = angle;
-                dnaGroup.add(bond);
-            }
-            
-            // Efeito especial para mutações (partículas ou pulsação)
+            // Efeito de pulsação para mutações
             if (isMutated) {
-                const ringGeometry = new THREE.RingGeometry(0.5, 0.6, 32);
-                const ringMaterial = new THREE.MeshBasicMaterial({ 
-                    color: 0xf97316, 
+                const ringGeo = new THREE.RingGeometry(0.8, 1.0, 32);
+                const ringMat = new THREE.MeshBasicMaterial({ 
+                    color: diseaseType === 'huntington' ? colors.pulse : colors.mutation, 
                     transparent: true, 
-                    opacity: 0.5,
+                    opacity: 0.6,
                     side: THREE.DoubleSide
                 });
-                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-                ring.position.set((x1+x2)/2 * 0.5, y, (z1+z2)/2 * 0.5);
-                ring.rotation.x = Math.PI / 2;
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.position.set(0, y, 0);
+                ring.rotation.x = Math.PI/2;
                 ring.userData = { isPulse: true, initialScale: 1 };
                 dnaGroup.add(ring);
+                pulseObjects.push(ring);
+                
+                // Adicionar partículas brilhantes no centro para mutação
+                const particleGeo = new THREE.SphereGeometry(0.2, 8, 8);
+                const particleMat = new THREE.MeshBasicMaterial({ 
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const particle = new THREE.Mesh(particleGeo, particleMat);
+                particle.position.set(0, y, 0);
+                particle.userData = { isPulse: true, isParticle: true };
+                dnaGroup.add(particle);
+                pulseObjects.push(particle);
             }
+            
+            // Ligações de hidrogênio (pontes entre as bases no centro)
+            // A-T tem 2 pontes, G-C tem 3 pontes
+            const hBonds = (base1 === 'G' || base1 === 'C') ? 3 : 2;
+            const hBondMat = new THREE.MeshBasicMaterial({ 
+                color: 0xffffff, 
+                transparent: true, 
+                opacity: 0.3 
+            });
+            
+            for (let h = 0; h < hBonds; h++) {
+                const hBondGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.3);
+                const hBond = new THREE.Mesh(hBondGeo, hBondMat);
+                const offset = (h - (hBonds-1)/2) * 0.4;
+                hBond.position.set(offset, y, 0);
+                hBond.rotation.z = Math.PI/2;
+                dnaGroup.add(hBond);
+            }
+        }
+
+        function createBackboneOnly(index, angle, y, radius) {
+            // Para deleção (Duchenne) - criar apenas backbone sem bases
+            const sugar1Pos = {
+                x: Math.cos(angle) * radius,
+                z: Math.sin(angle) * radius
+            };
+            const sugar2Pos = {
+                x: Math.cos(angle + Math.PI) * radius,
+                z: Math.sin(angle + Math.PI) * radius
+            };
+            
+            // Fosfatos
+            const phosGeo = new THREE.SphereGeometry(0.5, 16, 16);
+            const phosMat = new THREE.MeshPhongMaterial({ 
+                color: colors.phosphate,
+                transparent: true,
+                opacity: 0.5 
+            });
+            
+            const sugarGeo = new THREE.SphereGeometry(0.6, 16, 16);
+            const sugarMat = new THREE.MeshPhongMaterial({ 
+                color: colors.sugar,
+                transparent: true,
+                opacity: 0.5 
+            });
+            
+            const phos1 = new THREE.Mesh(phosGeo, phosMat);
+            phos1.position.set(sugar1Pos.x * 1.1, y + 0.6, sugar1Pos.z * 1.1);
+            dnaGroup.add(phos1);
+            
+            const phos2 = new THREE.Mesh(phosGeo, phosMat);
+            phos2.position.set(sugar2Pos.x * 1.1, y + 0.6, sugar2Pos.z * 1.1);
+            dnaGroup.add(phos2);
+            
+            const sugar1 = new THREE.Mesh(sugarGeo, sugarMat);
+            sugar1.position.set(sugar1Pos.x, y, sugar1Pos.z);
+            dnaGroup.add(sugar1);
+            
+            const sugar2 = new THREE.Mesh(sugarGeo, sugarMat);
+            sugar2.position.set(sugar2Pos.x, y, sugar2Pos.z);
+            dnaGroup.add(sugar2);
+            
+            // Indicador visual de quebra/mutação
+            const warningGeo = new THREE.SphereGeometry(0.3, 8, 8);
+            const warningMat = new THREE.MeshBasicMaterial({ 
+                color: 0xff0000,
+                transparent: true,
+                opacity: 0.8
+            });
+            const warning = new THREE.Mesh(warningGeo, warningMat);
+            warning.position.set(0, y, 0);
+            warning.userData = { isPulse: true, fast: true };
+            dnaGroup.add(warning);
+            pulseObjects.push(warning);
         }
 
         function getComplementary(base) {
             const pairs = { 'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C' };
-            return pairs[base];
+            return pairs[base] || 'A';
         }
 
         function showDisease(disease) {
-            currentMutation = disease;
+            currentDisease = disease;
             
             // Atualizar UI
             document.querySelectorAll('.disease-btn').forEach(btn => btn.classList.remove('active'));
@@ -572,21 +732,14 @@
             document.querySelectorAll('.info-box').forEach(box => box.classList.remove('active'));
             document.getElementById('info-' + disease).classList.add('active');
             
-            // Recriar DNA com animação de transição
+            // Recriar DNA
             createDNA(disease);
-            
-            // Efeito de transição na câmera
-            const originalPosition = camera.position.z;
-            camera.position.z += 5;
-            setTimeout(() => {
-                camera.position.z = originalPosition;
-            }, 300);
         }
 
         function resetView() {
-            camera.position.set(0, 0, 40);
+            camera.position.set(25, 20, 35);
+            controls.target.set(0, 10, 0);
             controls.reset();
-            dnaGroup.rotation.set(0, 0, 0);
         }
 
         function onWindowResize() {
@@ -596,19 +749,25 @@
         }
 
         function animate() {
-            animationId = requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
             
             if (dnaGroup) {
-                // Rotação automática suave
-                dnaGroup.rotation.y += 0.003;
+                // Rotação automática lenta
+                dnaGroup.rotation.y += 0.002;
                 
-                // Animação de pulsação para mutações
-                dnaGroup.children.forEach(child => {
-                    if (child.userData && child.userData.isPulse) {
-                        const time = Date.now() * 0.002;
-                        const scale = 1 + Math.sin(time) * 0.2;
-                        child.scale.set(scale, scale, scale);
-                        child.material.opacity = 0.5 - Math.sin(time) * 0.2;
+                // Animação de pulsação para elementos mutados
+                const time = Date.now() * 0.003;
+                pulseObjects.forEach((obj, idx) => {
+                    if (obj.userData.isPulse) {
+                        if (obj.userData.isParticle) {
+                            obj.position.y += Math.sin(time * 2) * 0.02;
+                        } else {
+                            const scale = 1 + Math.sin(time + idx) * 0.3;
+                            obj.scale.set(scale, scale, scale);
+                            if (obj.material.opacity !== undefined) {
+                                obj.material.opacity = 0.6 - Math.sin(time + idx) * 0.3;
+                            }
+                        }
                     }
                 });
             }
@@ -617,7 +776,7 @@
             renderer.render(scene, camera);
         }
 
-        // Iniciar quando carregar
+        // Iniciar
         window.addEventListener('load', init);
     </script>
 </body>
